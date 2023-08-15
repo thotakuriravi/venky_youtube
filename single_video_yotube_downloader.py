@@ -8,7 +8,9 @@ from pytube.exceptions import AgeRestrictedError
 
 
 # download_path = 'C:\\Users\\VENKY\\Documents\\youtube\\'
-download_path = 'C:\\Users\\thota\\Downloads\\'
+# download_path = 'C:\\Users\\thota\\Downloads\\'
+download_path = os.environ['USERPROFILE'] + '\\OneDrive\\Documents\\youtube\\'
+
 
 def downloader(video_urls, resolution='h'):
 

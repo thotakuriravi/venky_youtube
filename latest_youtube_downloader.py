@@ -31,7 +31,10 @@ def youtube_downloader(url, destination_folder, id, total_videos):
             
             # time.sleep(60)
             
-            ytv.streams.get_highest_resolution().download(output_path=destination_folder, 
+            # ytv.streams.get_highest_resolution().download(output_path=destination_folder, 
+            #                             filename=file_name)
+            
+            ytv.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download(output_path=destination_folder, 
                                         filename=file_name)
             
             if os.path.exists(destination_folder+file_name):
