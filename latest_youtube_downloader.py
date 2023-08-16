@@ -34,18 +34,25 @@ def youtube_downloader(url, destination_folder, id, total_videos):
             # ytv.streams.get_highest_resolution().download(output_path=destination_folder, 
             #                             filename=file_name)
             
-            ytv.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download(output_path=destination_folder, 
+            try:
+                
+                ytv.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download(output_path=destination_folder, 
                                         filename=file_name)
             
-            if os.path.exists(destination_folder+file_name):
-                print(f'\tVideo {id} of {total_videos} done.')
-                break
-            else:
+                if os.path.exists(destination_folder+file_name):
+                    print(f'\tVideo {id} of {total_videos} done.')
+                    break
+                else:
+                    print('file not downloaded')
+                    raise ValueError
+
+            except:
+                
                 raise ValueError
         
         except:
             if err_count == 3:
-                missed_urls.append(url)
+                missed_urls.append( f'video {id}: {url}')
                 break
             
             err_count = err_count + 1
@@ -80,6 +87,11 @@ def downloader(play_lists):
         
         playlist = Playlist(pl_url)
         id = 1
+        
+        with open(destination_folder + 'urls.txt', 'w') as f:
+            
+            for index, url in enumerate(playlist.video_urls):
+                f.write(f'video {index+1}: {url}\n')
 
         total_videos = len(playlist.video_urls)
         print(f'Total videos on playlist: {total_videos}')
@@ -117,9 +129,17 @@ def downloader(play_lists):
                             
             id += 1
         
+        global missed_urls
+        if len(missed_urls) > 0:
+            with open(destination_folder + 'missed_urls.txt', 'w') as f:
+                for missed_url in missed_urls:
+                    f.write(missed_url)
+            
+            missed_urls = []
+        
+        
         
         
         print(f'{play_list[0]} done')
         print('********************************************************')
-    with open('missed_downloads.txt', 'a') as f:
-        f.write(missed_urls)
+    
